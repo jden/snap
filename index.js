@@ -11,10 +11,10 @@ try {
 var DAYS_MS = 24*60*60*1000
 var defaultOpts = {
   sessionDuration: 30 * DAYS_MS,
-  db: 'mongodb://localhost:27017/',
+  connectionString: 'mongodb://localhost:27017/',
   collection: 'snapSessions',
   store: (!store || !mongo) ? false : function (cb) {
-    mongo.connect(this.db, function (err, db) {
+    mongo.connect(this.connectionString, function (err, db) {
       if (err) return cb(err)
       try {
         store = new store({db: db})
@@ -33,10 +33,13 @@ module.exports = function snap(pipeline, params, cb) {
   if (typeof params !== 'object') throw new Error('Missing required parameter: params must be an object')
   if (!params.secret) throw new Error('Missing required parameter: secret')
   withDefaults(params)
+console.log(params)
   if (!params.store || !params.connectionString) throw new Error('Session Store not available. Provide your own with the `store` parameter or run `$ npm install`.')
 
   bounce.call(params, params.store, function (err, store) {
-    if (err) cb ? cb(err) : throw err;
+    if (err) {
+      if (cb) { cb(err) } else { throw err }
+    }
 
     pipeline.use(muddle(
       connect.cookieParser(),

@@ -1,6 +1,6 @@
 {
   "name": "snap",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "session middleware for the truly lazy using mongodb",
   "main": "index.js",
   "scripts": {
