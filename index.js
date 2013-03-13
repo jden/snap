@@ -14,10 +14,11 @@ var defaultOpts = {
   connectionString: 'mongodb://localhost:27017/',
   collection: 'snapSessions',
   store: (!store || !mongo) ? false : function (cb) {
-    mongo.connect(this.connectionString, function (err, db) {
+    var opts = this
+    mongo.connect(opts.connectionString, function (err, db) {
       if (err) return cb(err)
       try {
-        store = new store({db: db})
+        store = new store({db: db, collection: opts.collection})
         cb(null, store)
       } catch (e) {
         cb(e)
