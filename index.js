@@ -29,14 +29,14 @@ var defaultOpts = {
 // @param pipeline - an object with a `.use` method which takes a connect-style middleware function
 // @param params - an object with properties as parameters (see)
 // @returns void
-module.exports = function snap(pipeline, params) {
+module.exports = function snap(pipeline, params, cb) {
   if (typeof params !== 'object') throw new Error('Missing required parameter: params must be an object')
   if (!params.secret) throw new Error('Missing required parameter: secret')
   withDefaults(params)
   if (!params.store || !params.connectionString) throw new Error('Session Store not available. Provide your own with the `store` parameter or run `$ npm install`.')
 
   bounce.call(params, params.store, function (err, store) {
-    if (err) throw err;
+    if (err) cb ? cb(err) : throw err;
 
     pipeline.use(muddle(
       connect.cookieParser(),
@@ -44,6 +44,7 @@ module.exports = function snap(pipeline, params) {
       passport.initialize(),
       passport.session()
     ))
+    process.nextTick(function () { cb() })
   })
 }
 
